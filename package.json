@@ -1,0 +1,36 @@
+{
+  "name": "nyx",
+  "version": "1.0.0",
+  "description": "NYX Scripting Language",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "dependencies": {
+    "browserify-pegjs": "^0.8.0-2",
+    "es6ify": "^1.5.1",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.2.1",
+    "grunt-contrib-uglify": "^0.6.0",
+    "mocha": "^2.0.1",
+    "pegjs": "^0.8.0",
+    "traceur": "0.0.79"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1"
+  },
+  "scripts": {
+    "test": "mocha tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asterick/nyx.git"
+  },
+  "author": "Robert Vandiver",
+  "license": "apache",
+  "bugs": {
+    "url": "https://github.com/asterick/nyx/issues"
+  },
+  "homepage": "https://github.com/asterick/nyx"
+}
