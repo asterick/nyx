@@ -32,48 +32,48 @@ first namespace being defined as the root namespace.  Remote modules cannot refe
 although the root namespace may provide references to them.
 
 ### Module Structure
-    * [Namespace[(#namespaces)] List
+* [Namespace[(#namespaces)] List
 
 ### Namespaces
-    * Flags
-    * Initalizer
-        * Points to a block
-    * Namespace reference List
-        * Foreign references
-        * Extends list
-    * [Template](#templates) List
-    * [Block](#blocks) List
+* Flags
+* Initalizer
+    * Points to a block
+* Namespace reference List
+    * Foreign references
+    * Extends list
+* [Template](#templates) List
+* [Block](#blocks) List
 
 ### Templates
-    * Atomic Value
-        * Boolean, Atom, Number, String
-    * Foreign Namespace
-        * Points to Namespace reference list
-    * Local Namespace
-        * Points to module namespace table
-    * Reference
-        * Local register
-        * Function
-        * Array / Tuple / Table
-            * Contains references to other templates (including other references)
+* Atomic Value
+    * Boolean, Atom, Number, String
+* Foreign Namespace
+    * Points to Namespace reference list
+* Local Namespace
+    * Points to module namespace table
+* Reference
+    * Local register
+    * Function
+    * Array / Tuple / Table
+        * Contains references to other templates (including other references)
 
-    [nil](#nil-type) is always entry zero in the template table, and is excluded from
-    the module storage model
+[nil](#nil-type) is always entry zero in the template table, and is excluded from
+the module storage model
 
 ### Blocks
-    * [Instruction](#instruction-set) List
-    * Trap block
+* [Instruction](#instruction-set) List
+* Trap block
 
 ### Functions
-    * Flags
-        * co-routine
-        * rest-parameter
-    * Closure Table
-    * Local Registers
-    * Arguments
-        * Count
-        * Defaults
-    * Entry Point
+* Flags
+    * co-routine
+    * rest-parameter
+* Closure Table
+* Local Registers
+* Arguments
+    * Count
+    * Defaults
+* Entry Point
 
 Data Types
 ----------
@@ -82,12 +82,12 @@ Data types are broken down into three basic categories:
 [Value types](#value-types), [Reference Types](#reference-types) and finally [Runtime Types](#runtime-types).
 
 ### Value Types
-    * [Nil](#nil-type)
-    * [Boolean](#boolean-type)
-    * [Atom](#atom-type)
-    * [Number](#number-type)
-    * [String](#string-type)
-    * [Tuple](#tuple-type)
+* [Nil](#nil-type)
+* [Boolean](#boolean-type)
+* [Atom](#atom-type)
+* [Number](#number-type)
+* [String](#string-type)
+* [Tuple](#tuple-type)
 
 Value types are the atomic values in the machine.  They do not maintain ownership over anything other than
 their identity, and are not equal to anything else in the runtime other than items that share the same
@@ -131,9 +131,9 @@ useful for using multi-key indexes inside of tables.  Concatination will create 
 patterns joined.  All other operations will return nil.
 
 ### Reference Types
-    * [Array](#array-type)
-    * [Table](#table-type)
-    * [Function](#function-type)
+* [Array](#array-type)
+* [Table](#table-type)
+* [Function](#function-type)
 
 Reference types are elements that have an identity based on when they were contructed.  This is mostly provided
 for speed, as tables, arrays, and functions hold context and any operation placed on them should offer in-place
@@ -161,7 +161,7 @@ although the namespaces can be cloned.
 More information can be found in the (namespace function description)[#functions]
 
 ### Runtime Types
-    * [Namespace](#namespace-type)
+* [Namespace](#namespace-type)
 
 Runtime types are internal types that are not presented as a visible type to the VM.  This is reserved for
 internal types required to handle the object level architecture.  Currently this is reserved for the Namespace
