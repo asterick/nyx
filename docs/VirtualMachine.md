@@ -27,22 +27,33 @@ Modules
 
 Modules are the top level element of a virtual machine.  They are containers called [Namespaces](#namespaces),
 which provide the basis for a object oriented language, without any of the complications of things such as
-prototype chains or multiple inheritance.  Multiple namespaces can be provided in a single module, with the
-first namespace being defined as the root namespace.  Remote modules cannot reference sub namespaces directly
-although the root namespace may provide references to them.
+prototype chains or multiple inheritance.
 
-### Module Structure
-* [Namespace[(#namespaces)] List
+Multiple namespaces can be provided in a single module, with the first namespace being defined as the root
+namespace.  Remote modules cannot reference sub namespaces directly although the root namespace may provide
+references to them.
+
+### Structure
+* Reference List
+* [Namespace](#namespaces) List
+
+This is all a module loader is expected to provide.  The block requesting the module will receive the context
+table of the first namespace in the table as the requested value.  Namespaces are initialized lazily, sometimes
+never in the case of extended global contexts.
+
+The reference list is simply a list of plain text module names that the module loader is required to resolve.  The format and implentation is at the discretion of the loader implementer.
 
 ### Namespaces
 * Flags
 * Initalizer
     * Points to a block
-* Namespace reference List
+* Foreign Reference List
     * Foreign references
-    * Extends list
+* Extend list
 * [Template](#templates) List
 * [Block](#blocks) List
+
+
 
 ### Templates
 * Atomic Value
