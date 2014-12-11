@@ -34,46 +34,76 @@ namespace.  Remote modules cannot reference sub namespaces directly although the
 references to them.
 
 ### Structure
-* Reference List
+* Foreign Namespace List
 * [Namespace](#namespaces) List
 
 This is all a module loader is expected to provide.  The block requesting the module will receive the context
 table of the first namespace in the table as the requested value.  Namespaces are initialized lazily, sometimes
 never in the case of extended global contexts.
 
-The reference list is simply a list of plain text module names that the module loader is required to resolve.  The format and implentation is at the discretion of the loader implementer.
+The reference list is simply a list of plain text module names that the module loader is required to resolve.
+The format and implentation is at the discretion of the loader implementer.
+
+Namespaces are indexed as such:  0..n are foreign references, and indexes number after this are local namespaces
 
 ### Namespaces
 * Flags
-* Initalizer
     * Points to a block
-* Foreign Reference List
-    * Foreign references
 * Extend list
 * [Template](#templates) List
 * [Block](#blocks) List
-
-
+* Initalizer
 
 ### Templates
-* Atomic Value
+* Atomic Values Templates
     * Boolean, Atom, Number, String
-* Foreign Namespace
-    * Points to Namespace reference list
-* Local Namespace
-    * Points to module namespace table
-* Reference
+* Compound templates
     * Local register
     * Function
+    * Namespace
     * Array / Tuple / Table
-        * Contains references to other templates (including other references)
+
+Templates are the heart of the nyx runtime.  Templates are, in essesnce, constants that can make reference
+to local values.  They behave as a quick method of describing more complicated data types in a way that full
+values can be build with a single instruction without losing the reentrant nature of the runtime.  The behavior
+of a template varys depending on if it is being assigned to, or accessed as a value.
 
 [nil](#nil-type) is always entry zero in the template table, and is excluded from
 the module storage model
 
+#### Templates as a value
+* Atomic Value: applied in-place as a constant
+* Function: closure variables and context are inherited from the current execution state of the VM.
+* Array: contains a list of nested templates.  These templates are referenced
+    as a value, and then used to construct a new array
+* Table: Same as an array, except key / value pairs are used
+* Local Register: The value of the local register referenced is used in-place
+* Namespace: The requested namespace is one-time initialzed, and it's context table is returned
+
+#### Templates as an assignment target
+* Atomic Value: If assigned value does not match, an assignment assertion error occurs
+* Local Register: Value is assigned to the local register
+* Array: Right side is de-structured and assigned to the indexes of the template
+    * If the source is not an array, or of a different length, an assignment assertion error occurs
+* Tuple: Identical to array, only with Tuple type
+    * If the source is not an tuple, or of a different length, an assignment assertion error occurs
+* Table: Keys referenced in the template are assigned to the key/value pairs in the right side
+    * If source is not a table, assignment assertion error occurs
+    * Keys not found in the source will be assigned as 'nil'
+
+Assigning to a namespace or function template is not permitted and will throw an validation error to the
+module loader.
+
 ### Blocks
 * [Instruction](#instruction-set) List
 * Trap block
+
+Blocks are consecutive chains of instructions that are used as flow control for your module.  Instructions
+are executed in order until execution is passed on to a new block or is otherwise interrupted.
+
+Trap block is an optional block that may be provided as a alternate code path if a value is throwed to the
+virtual machine.  If no trap is specified, the next block in the call stack's trap is called.  If no trap is
+received, the exception is sent to the virtual machine and execution will stop.
 
 ### Functions
 * Flags
@@ -85,6 +115,8 @@ the module storage model
     * Count
     * Defaults
 * Entry Point
+
+TODO: WRITE THIS CRAP
 
 Data Types
 ----------
@@ -254,7 +286,7 @@ Opcode | Mnemonic   | T-Op     | A-Op    | B-Op        | Description
     0F | delete     | object   | key                  || delete object[key]
     10 | call       | target   | function | arg_object | call function with arguments
     11 | set        | target   | source               || target = source
-    12 | new        | target   | namespace            || target = create new namespace w/context
+    12 | new        | target   | namespace index      || target = create new namespace w/context
     13 | break      | levels                         ||| move N levels up block stack
     14 | throw      | object                         ||| bubble exception up block stack
     15 | return     | value                          ||| return value out of function
