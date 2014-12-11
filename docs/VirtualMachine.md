@@ -36,6 +36,7 @@ references to them.
 ### Structure
 * Foreign Namespace List
 * [Namespace](#namespaces) List
+* [Template](#templates) List
 
 This is all a module loader is expected to provide.  The block requesting the module will receive the context
 table of the first namespace in the table as the requested value.  Namespaces are initialized lazily, sometimes
@@ -51,7 +52,6 @@ Namespaces are indexed as such:  0..n are foreign references, and indexes number
     * Points to a block
     * final, sealed
 * Extend list
-* [Template](#templates) List
 * [Block](#blocks) List
 * Initalizer
 
