@@ -49,10 +49,13 @@ Namespaces are indexed as such:  0..n are foreign references, and indexes number
 ### Namespaces
 * Flags
     * Points to a block
+    * final, sealed
 * Extend list
 * [Template](#templates) List
 * [Block](#blocks) List
 * Initalizer
+
+TODO: WRITE THIS CRAP
 
 ### Templates
 * Atomic Values Templates
