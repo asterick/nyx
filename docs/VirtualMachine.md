@@ -36,7 +36,6 @@ references to them.
 ### Structure
 * Foreign Namespace List
 * [Namespace](#namespaces) List
-* [Template](#templates) List
 
 This is all a module loader is expected to provide.  The block requesting the module will receive the context
 table of the first namespace in the table as the requested value.  Namespaces are initialized lazily, sometimes
@@ -49,13 +48,27 @@ Namespaces are indexed as such:  0..n are foreign references, and indexes number
 
 ### Namespaces
 * Flags
-    * Points to a block
-    * final, sealed
 * Extend list
+* [Template](#templates) List
 * [Block](#blocks) List
 * Initalizer
 
-TODO: WRITE THIS CRAP
+Namespaces are really constructors for tables. They are initalized the first time they are referenced as a value
+and ultimately create a table for use in other parts of the VM.  This logic can be use to create classes, modules
+and possibly other patterns and is ultimately reasonably flexible.
+
+Flags are as follows; Final: namespace cannot be extended by another name space.  Sealed: resulting table cannot
+be modified by any context other than it's own
+
+The extend list provides a hierarchy for initalization.  Context values are not shared between namespaces, but
+their initalizers are called before it's own, and can be used interally to determine inheritance.
+
+Template and Block lists are simply a zero-indexed list of [Blocks](#blocks) and [Templates](#templates) that will
+be referenced inside of the namespace.
+
+Finally is the initializer.  This is a block that is executed any time a new instance of a namespace context is first referenced.  Initalizers are executed on the context extend list first to last, followed by the namespace's own
+initalizer.  As stated before there are no shared values between contexts so static values have to be implemented in
+a seperate namespace.
 
 ### Templates
 * Atomic Values Templates
@@ -110,16 +123,45 @@ received, the exception is sent to the virtual machine and execution will stop.
 
 ### Functions
 * Flags
-    * co-routine
-    * rest-parameter
 * Closure Table
 * Local Registers
 * Arguments
-    * Count
-    * Defaults
 * Entry Point
 
-TODO: WRITE THIS CRAP
+Functions templates provide the subroutine architecture to nyx. Flags are general purpose settings, and right now there are only two:  coroutine and rest parameter.
+
+co-routine sets the function to instance as a generator factory when it's referenced.  This function returns another function that maintains it's state and can emit values each time it is called.  This happens by restoring the previous calling state of the function when it was initally called, and emitting values using it's return / tail_call opcodes.
+
+This overrides the default behavior of destroying the calling state. Execution state is preserved, and it will resume executing from that point if the function is called again.  The execution state can be destroyed by emitting a ***nil***
+value.  tail_call is used to pass control over to another co-routine / iterator, replacing it's own state with that of
+another.
+
+the "rest parameter" flag creates an additional argument register that will contain any unused arguments passed to
+the function as an array.
+
+The closure table allows a function to inherit a 'reference' to the local variables of the currently calling function.  Any changes to the register in the function's local scope will also alter the value of the register in the calling function's scope.  There is no restriction on how deep the closure chain can go, but a closure cannot reference a register
+to a function originating from a different context.
+
+Local register is a count of local scratch values that are available to the function.  The language does not have a value
+stack, so this provides an upper limit to the amount of allocated space a function can take.  Local registers initalize to
+zero.
+
+The arguments table contains an ordered list of the templates used in place of an unspecific argument.
+By default the value is nil (although it must be supplied to the VM)
+
+Finally entry point is simply an index to a block that contains the first instructions when a function is called. these
+instructions are not called in a coroutine until the first value is accessed and can be used to lazy load data.
+
+#### Register allocation
+
+Type (ascending order) | Description
+----------------------:|---------------------------------------------------------------------------
+               Context | Reference to the 'this' object.  The context that created the function
+               Closure | Registers shared with the calling function's register space
+             Arguments | Values populated by the call of the function
+                  Rest | Register used to store a table with overflow arguments (optional)
+                 Local | Pre-allocated scratch registers
+
 
 Data Types
 ----------
