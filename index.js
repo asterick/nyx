@@ -4,6 +4,7 @@
 
 var traceur = require('traceur'),
     pegjs = require("pegjs"),
+    path = require("path"),
     fs = require("fs");
 
 require.extensions['.pegjs'] =
@@ -12,10 +13,13 @@ require.extensions['.pegjs'] =
     }
 
 traceur.require.makeDefault(function(filename) {
+    var relative = path.normalize(path.relative(__dirname, filename)),
+        parts = relative.split(path.sep);
+
+    if (relative[0] == '.' || parts[0] == 'node_modules') return false;
+
     // don't transpile our dependencies, just our app
     return filename.indexOf('node_modules') === -1;
 }, {annotations: true});
 
 module.exports = require("./lib");
-
-console.log(module.exports);
